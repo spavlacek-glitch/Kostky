@@ -3,13 +3,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes"><title>Kostky H vs S</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#111318;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{max-width:600px;margin:auto;padding:18px 14px 40px}h1{margin:0 0 14px;font-size:25px}
+main{max-width:600px;margin:auto;padding:18px 14px 40px}h1{margin:0 0 14px;font-size:25px}.mirror{transform:rotate(180deg);margin-bottom:12px}.mirror .total{font-size:34px}
 .score{display:grid;grid-template-columns:1fr 1fr;gap:10px}.card{background:#1d2027;border:2px solid transparent;border-radius:18px;text-align:center;padding:12px}.card.win{border-color:#fff}.who{font-size:20px;font-weight:800}.total{font-size:42px;font-weight:900}.status{text-align:center;color:#aaa;margin:10px}
 .grid{overflow:hidden;border-radius:18px;background:#1d2027}.row{display:grid;grid-template-columns:42px 1fr 1fr;border-bottom:1px solid #30343d}.row:last-child{border:0}.n{display:grid;place-items:center;color:#888;font-weight:700}
 input{width:100%;min-height:58px;border:0;border-left:1px solid #30343d;background:transparent;color:white;text-align:center;font-size:23px;font-weight:800;outline:0}input:focus{background:#292d36}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}button{border:0;border-radius:14px;padding:15px;font-size:16px;font-weight:800}.dark{background:#292d36;color:#fff}
 h2{font-size:18px;margin-top:24px}.hist{display:flex;justify-content:space-between;background:#1d2027;padding:12px 14px;border-radius:12px;margin:8px 0}.muted{color:#777;font-size:13px;text-align:center;margin-top:14px}
 </style></head><body><main>
+<div class="score mirror"><div id="mcS" class="card"><div class="who">S</div><div id="mtS" class="total">0</div></div><div id="mcH" class="card"><div class="who">H</div><div id="mtH" class="total">0</div></div></div>
 <h1>🎲 Kostky <small style="color:#888;font-size:14px">H vs S</small></h1>
 <div class="score"><div id="cH" class="card"><div class="who">H</div><div id="tH" class="total">0</div></div><div id="cS" class="card"><div class="who">S</div><div id="tS" class="total">0</div></div></div>
 <div id="status" class="status">Začínáme 🎲</div><div id="games" class="status" style="font-weight:800;color:#fff">Na hry: H 0 : 0 S</div><div id="points" class="status" style="font-weight:800;color:#fff">Celkem bodů: H 0 : 0 S</div><div id="grid" class="grid"></div>
@@ -23,7 +24,7 @@ for(const p of ['H','S'])d[p]=Array.from({length:N},(_,i)=>d[p]?.[i]??'');
 const g=document.getElementById('grid');
 for(let i=0;i<N;i++){let r=document.createElement('div');r.className='row';r.innerHTML='<div class="n">'+(i+1)+'</div><input inputmode="numeric" data-p="H" data-i="'+i+'" value="'+d.H[i]+'"><input inputmode="numeric" data-p="S" data-i="'+i+'" value="'+d.S[i]+'">';g.appendChild(r)}
 const sum=p=>d[p].reduce((a,v)=>a+(parseInt(v)||0),0);
-function draw(){let h=sum('H'),s=sum('S');tH.textContent=h;tS.textContent=s;cH.classList.toggle('win',h>s);cS.classList.toggle('win',s>h);status.textContent=(h===0&&s===0)?'Začínáme 🎲':h===s?'Shodné skóre — hra pokračuje 🎲':(h>s?'H':'S')+' vede o '+Math.abs(h-s);localStorage.setItem(K,JSON.stringify(d))}
+function draw(){let h=sum('H'),s=sum('S');tH.textContent=h;tS.textContent=s;mtH.textContent=h;mtS.textContent=s;cH.classList.toggle('win',h>s);cS.classList.toggle('win',s>h);mcH.classList.toggle('win',h>s);mcS.classList.toggle('win',s>h);status.textContent=(h===0&&s===0)?'Začínáme 🎲':h===s?'Shodné skóre — hra pokračuje 🎲':(h>s?'H':'S')+' vede o '+Math.abs(h-s);localStorage.setItem(K,JSON.stringify(d))}
 g.oninput=e=>{if(e.target.tagName!=='INPUT')return;e.target.value=e.target.value.replace(/\D/g,'');d[e.target.dataset.p][+e.target.dataset.i]=e.target.value;draw()};
 function history(){let a=JSON.parse(localStorage.getItem(HK)||'[]'),el=document.getElementById('history');let hw=a.filter(x=>x.h>x.s).length,sw=a.filter(x=>x.s>x.h).length,hp=a.reduce((n,x)=>n+(Number(x.h)||0),0),sp=a.reduce((n,x)=>n+(Number(x.s)||0),0);document.getElementById('games').textContent='Na hry: H '+hw+' : '+sw+' S';document.getElementById('points').textContent='Celkem bodů: H '+hp.toLocaleString('cs-CZ')+' : '+sp.toLocaleString('cs-CZ')+' S';el.innerHTML=a.length?a.map(x=>'<div class="hist"><span>'+x.date+'</span><strong>H '+x.h+' : '+x.s+' S</strong></div>').join(''):'<div class="muted">Zatím žádná uložená hra.</div>'}
 function blank(){d={H:Array(N).fill(''),S:Array(N).fill('')};document.querySelectorAll('input').forEach(x=>x.value='');draw()}
